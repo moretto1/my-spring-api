@@ -22,7 +22,7 @@ public class ProductGroupServiceImpl implements ProductGroupService {
 
     @Override
     public ProductGroup create(ProductGroup productGroup) {
-        if (productGroup.getId() != null && productGroupRepository.existsByName(productGroup.getName())) {
+        if (productGroup.getId() != null || productGroupRepository.existsByName(productGroup.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product group already exists.");
         }
 

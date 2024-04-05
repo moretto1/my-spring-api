@@ -1,7 +1,9 @@
 package com.moretto.bruno.myspringapi.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -10,6 +12,8 @@ import java.time.LocalDateTime;
 @Table
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductGroup {
 
     @Id
@@ -27,4 +31,7 @@ public class ProductGroup {
         this.createdDate = LocalDateTime.now();
     }
 
+    public ProductGroup(Long id) {
+        this.id = id;
+    }
 }
