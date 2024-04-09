@@ -23,6 +23,10 @@ public class ProductGroup {
     @Column(nullable = false, length = 50, unique = true)
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
 

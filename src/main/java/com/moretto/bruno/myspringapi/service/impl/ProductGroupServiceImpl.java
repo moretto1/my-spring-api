@@ -1,6 +1,9 @@
 package com.moretto.bruno.myspringapi.service.impl;
 
 import com.moretto.bruno.myspringapi.entity.ProductGroup;
+import com.moretto.bruno.myspringapi.exception.EntityAlreadyExistsException;
+import com.moretto.bruno.myspringapi.exception.EntityNotFoundException;
+import com.moretto.bruno.myspringapi.exception.EntityWithoutIdException;
 import com.moretto.bruno.myspringapi.repository.ProductGroupRepository;
 import com.moretto.bruno.myspringapi.service.ProductGroupService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +21,14 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class ProductGroupServiceImpl implements ProductGroupService {
 
+    private static final String PRESENTABLE_NAME = "Product group";
+
     private final ProductGroupRepository productGroupRepository;
 
     @Override
     public ProductGroup create(ProductGroup productGroup) {
         if (productGroup.getId() != null || productGroupRepository.existsByName(productGroup.getName())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product group already exists.");
+            throw new EntityAlreadyExistsException(PRESENTABLE_NAME);
         }
 
         return productGroupRepository.save(productGroup);
@@ -31,9 +36,12 @@ public class ProductGroupServiceImpl implements ProductGroupService {
 
     @Override
     public ProductGroup update(ProductGroup productGroup) {
-        if (productGroup.getId() == null || !productGroupRepository.existsById(productGroup.getId())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    format("Product group with identifier %d doesn't exists.", productGroup.getId()));
+        if (productGroup.getId() == null) {
+            throw new EntityWithoutIdException(PRESENTABLE_NAME);
+        }
+
+        if (!productGroupRepository.existsById(productGroup.getId())) {
+            throw new EntityNotFoundException(PRESENTABLE_NAME, productGroup.getId());
         }
 
         return productGroupRepository.save(productGroup);
@@ -42,8 +50,7 @@ public class ProductGroupServiceImpl implements ProductGroupService {
     @Override
     public ProductGroup getById(long id) {
         return productGroupRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, format("Product group with identifier %d not found.", id)));
+                .orElseThrow(() -> new EntityNotFoundException(PRESENTABLE_NAME, id));
     }
 
     @Override
