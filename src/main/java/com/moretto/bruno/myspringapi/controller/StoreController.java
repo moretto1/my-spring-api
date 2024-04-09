@@ -14,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
+@RequestMapping(path = "/stores")
 @RequiredArgsConstructor
 public class StoreController {
 
