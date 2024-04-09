@@ -1,67 +1,54 @@
 package com.moretto.bruno.myspringapi.controller;
 
 import com.moretto.bruno.myspringapi.dto.ProductDTO;
-import com.moretto.bruno.myspringapi.entity.Product;
-import com.moretto.bruno.myspringapi.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
-
-@RestController
 @RequestMapping(path = "/products")
-@RequiredArgsConstructor
-public class ProductController {
-    
-    private final ProductService productService;
-    private final ModelMapper mapper;
+@Tag(name = "Products", description = "Represents products endpoints.")
+public interface ProductController {
 
-    @PostMapping
-    public ResponseEntity<Void> create(@RequestBody @Valid ProductDTO productDTO) {
-        Product product = mapper.map(productDTO, Product.class);
-        product = productService.create(product);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Creates a new product.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully completes the request.",
+                            headers = @Header(name = "location", description = "Location to access the saved product.")),
+                    @ApiResponse(responseCode = "400", description = "When product already contains identifier.")
+            })
+    ResponseEntity<Void> create(@RequestBody @Valid ProductDTO productDTO);
 
-        URI selfURI = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(product.getId())
-                .toUri();
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Updates a product.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully completes the request.",
+                            headers = @Header(name = "location", description = "Location to access the saved product.")),
+                    @ApiResponse(responseCode = "400", description = "When product doesn't contains identifier."),
+                    @ApiResponse(responseCode = "404", description = "When product is not found.")
+            })
+    ResponseEntity<Void> update(@RequestBody @Valid ProductDTO productDTO);
 
-        return ResponseEntity.created(selfURI).build();
-    }
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Gets a product by its identifier.",
+            responses = @ApiResponse(responseCode = "200", description = "Successfully completes the request."))
+    ResponseEntity<ProductDTO> getById(
+            @PathVariable @Parameter(description = "Product identifier.", example = "123") long id
+    );
 
-    @PutMapping
-    public ResponseEntity<Void> update(@RequestBody @Valid ProductDTO productDTO) {
-        Product product = mapper.map(productDTO, Product.class);
-        product = productService.update(product);
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Finds all products with pagination.",
+            responses = @ApiResponse(responseCode = "200", description = "Successfully completes the request.")
+    )
+    ResponseEntity<Page<ProductDTO>> findAll(
+            @RequestParam @Parameter(description = "Number of the page to return.", example = "2") int pageNumber,
+            @RequestParam @Parameter(description = "Size of the page to return.", example = "10") int pageSize
+    );
 
-        URI selfURI = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(product.getId())
-                .toUri();
-
-        return ResponseEntity.ok().location(selfURI).build();
-    }
-
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<ProductDTO> getById(@PathVariable long id) {
-        Product product = productService.getById(id);
-
-        ProductDTO productDTO = mapper.map(product, ProductDTO.class);
-
-        return ResponseEntity.ok(productDTO);
-    }
-
-    @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAll(@RequestParam int pageNumber, @RequestParam int pageSize) {
-        Page<Product> productGroups = productService.findAll(pageNumber, pageSize);
-        Page<ProductDTO> productGroupDTOs = productGroups.map(product -> mapper.map(product, ProductDTO.class));
-
-        return ResponseEntity.ok(productGroupDTOs);
-    }
-    
 }

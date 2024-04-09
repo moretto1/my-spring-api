@@ -1,67 +1,48 @@
 package com.moretto.bruno.myspringapi.controller;
 
 import com.moretto.bruno.myspringapi.dto.StoreDTO;
-import com.moretto.bruno.myspringapi.entity.Store;
-import com.moretto.bruno.myspringapi.service.StoreService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
-
-@RestController
 @RequestMapping(path = "/stores")
-@RequiredArgsConstructor
-public class StoreController {
+@Tag(name = "Stores", description = "Represents stores endpoints.")
+public interface StoreController {
 
-    private final StoreService storeService;
-    private final ModelMapper mapper;
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Creates a new store.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully completes the request.",
+                            headers = @Header(name = "location", description = "Location to access the saved store.")),
+                    @ApiResponse(responseCode = "400", description = "When store already contains identifier.")
+            })
+    ResponseEntity<Void> create(@RequestBody @Valid StoreDTO storeDTO);
 
-    @PostMapping
-    public ResponseEntity<Void> create(@RequestBody @Valid StoreDTO storeDTO) {
-        Store store = mapper.map(storeDTO, Store.class);
-        store = storeService.create(store);
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Updates a store.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully completes the request.",
+                            headers = @Header(name = "location", description = "Location to access the saved store.")),
+                    @ApiResponse(responseCode = "400", description = "When store doesn't contains identifier."),
+                    @ApiResponse(responseCode = "404", description = "When store is not found.")
+            })
+    ResponseEntity<Void> update(@RequestBody @Valid StoreDTO storeDTO);
 
-        URI selfURI = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(store.getId())
-                .toUri();
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Gets a store by its identifier.",
+            responses = @ApiResponse(responseCode = "200", description = "Successfully completes the request."))
+    ResponseEntity<StoreDTO> getById(@PathVariable long id);
 
-        return ResponseEntity.created(selfURI).build();
-    }
-
-    @PutMapping
-    public ResponseEntity<Void> update(@RequestBody @Valid StoreDTO storeDTO) {
-        Store store = mapper.map(storeDTO, Store.class);
-        store = storeService.update(store);
-
-        URI selfURI = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(store.getId())
-                .toUri();
-
-        return ResponseEntity.ok().location(selfURI).build();
-    }
-
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<StoreDTO> getById(@PathVariable long id) {
-        Store store = storeService.getById(id);
-
-        StoreDTO storeDTO = mapper.map(store, StoreDTO.class);
-
-        return ResponseEntity.ok(storeDTO);
-    }
-
-    @GetMapping
-    public ResponseEntity<Page<StoreDTO>> findAll(@RequestParam int pageNumber, @RequestParam int pageSize) {
-        Page<Store> stores = storeService.findAll(pageNumber, pageSize);
-        Page<StoreDTO> storeDTOS = stores.map(store -> mapper.map(store, StoreDTO.class));
-
-        return ResponseEntity.ok(storeDTOS);
-    }
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Finds all stores with pagination.",
+            responses = @ApiResponse(responseCode = "200", description = "Successfully completes the request.")
+    )
+    ResponseEntity<Page<StoreDTO>> findAll(@RequestParam int pageNumber, @RequestParam int pageSize);
 
 }

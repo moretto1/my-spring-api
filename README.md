@@ -1,6 +1,6 @@
 # My Spring API
 
-Project to demonstrate my knowledges in Spring Boot and your features.
+Project to demonstrate my knowledge in Spring Boot and your features.
 
 The project idea is simples, an API to manage products of a store.
 
