@@ -1,6 +1,7 @@
 package com.moretto.bruno.myspringapi.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,12 +19,16 @@ public class ProductDTO {
     @NotBlank(message = "Product name is required.")
     private String name;
 
-    @NotBlank(message = "Product price is required.")
+    @NotNull(message = "Product price is required.")
     @PositiveOrZero(message = "Product price must be a positive number.")
     private Double price;
 
     private Integer quantity;
 
+    @NotNull(message = "Product store is required.")
+    private StoreDTO store;
+
+    @NotNull(message = "Product group is required.")
     private ProductGroupDTO group;
 
 }

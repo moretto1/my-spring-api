@@ -8,14 +8,13 @@ public class StringUtils {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
 
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%&*()-[]{};,/";
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%&*()-[]{};,";
 
-        while (sb.length() < size) { // length of the random string.
-            int index = random.nextInt() * chars.length();
+        while (sb.length() < size) {
+            int index = random.nextInt(chars.length());
             sb.append(chars.charAt(index));
         }
         return sb.toString();
-
     }
 
 }

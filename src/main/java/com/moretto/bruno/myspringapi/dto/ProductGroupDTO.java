@@ -1,6 +1,7 @@
 package com.moretto.bruno.myspringapi.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,8 @@ public class ProductGroupDTO {
 
     @NotBlank(message = "Product group name is required.")
     private String name;
+
+    @NotNull(message = "The store from product group is required.")
+    private StoreDTO store;
 
 }
