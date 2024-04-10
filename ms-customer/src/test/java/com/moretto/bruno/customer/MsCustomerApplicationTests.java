@@ -1,10 +1,10 @@
-package com.moretto.bruno.customers;
+package com.moretto.bruno.customer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CustomersApplicationTests {
+class MsCustomerApplicationTests {
 
 	@Test
 	void contextLoads() {

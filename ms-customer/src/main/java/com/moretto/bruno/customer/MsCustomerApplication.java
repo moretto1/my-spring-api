@@ -1,13 +1,13 @@
-package com.moretto.bruno.customers;
+package com.moretto.bruno.customer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CustomersApplication {
+public class MsCustomerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CustomersApplication.class, args);
+		SpringApplication.run(MsCustomerApplication.class, args);
 	}
 
 }
